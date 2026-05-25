@@ -224,6 +224,7 @@ __marimo__/
 .env.local
 *.pem
 medflow-secrets.txt
+.dlt/secrets.toml
 
 # Data files (we don't commit data to git)
 data/raw/
