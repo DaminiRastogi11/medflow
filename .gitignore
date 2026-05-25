@@ -216,3 +216,40 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# === MEDFLOW PROJECT ADDITIONS ===
+
+# Secrets and environment
+.env
+.env.local
+*.pem
+medflow-secrets.txt
+
+# Data files (we don't commit data to git)
+data/raw/
+data/processed/
+*.csv
+*.parquet
+*.duckdb
+*.duckdb.wal
+
+# dbt
+transformation/medflow_dbt/dbt_packages/
+transformation/medflow_dbt/target/
+transformation/medflow_dbt/logs/
+profiles.yml
+
+# Dagster
+orchestration/dagster_home/
+tmp_dagster*/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/settings.json
+
+# uv lock files we DO want to commit (uv.lock) — pyproject.toml already in
+# Don't ignore uv.lock!

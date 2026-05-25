@@ -1,0 +1,19 @@
+[project]
+name = "medflow"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.12"
+dependencies = [
+    "dagster>=1.13.6",
+    "dagster-dbt>=0.29.6",
+    "dagster-webserver>=1.13.6",
+    "dbt-core>=1.11.11",
+    "dbt-duckdb>=1.10.1",
+    "dbt-snowflake>=1.11.5",
+    "dlt[duckdb,filesystem,snowflake]>=1.27.0",
+    "great-expectations>=1.17.2",
+    "pandas>=3.0.3",
+    "pyarrow>=24.0.0",
+    "python-dotenv>=1.2.2",
+    "streamlit>=1.57.0",
+]
