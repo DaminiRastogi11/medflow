@@ -1,0 +1,46 @@
+name: 'medflow_dbt'
+version: '1.0.0'
+config-version: 2
+
+profile: 'medflow_dbt'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+  - "logs"
+
+# ============================================================================
+# Model configuration
+# ============================================================================
+models:
+  medflow_dbt:
+    # Staging models: lightweight, materialized as views
+    staging:
+      +materialized: view
+    # Intermediate: ephemeral CTEs (no warehouse footprint)
+    intermediate:
+      +materialized: ephemeral
+    # Marts: physical tables for query performance
+    marts:
+      +materialized: table
+
+# ============================================================================
+# Test configuration
+# ============================================================================
+tests:
+  +store_failures: true
+  +severity: warn
+
+# ============================================================================
+# Project metadata
+# ============================================================================
+vars:
+  start_date: '1900-01-01'

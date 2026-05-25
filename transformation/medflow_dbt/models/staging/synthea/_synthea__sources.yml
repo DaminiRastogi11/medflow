@@ -1,0 +1,116 @@
+version: 2
+
+sources:
+  - name: synthea
+    description: >
+      Raw Synthea synthetic patient data loaded by the dlt ingestion pipeline.
+      Source: https://synthea.mitre.org/ — 100 patient sample CSVs.
+    database: medflow
+    schema: raw
+    loaded_at_field: _dlt_load_id
+    freshness:
+      warn_after: {count: 24, period: hour}
+      error_after: {count: 72, period: hour}
+
+    tables:
+      - name: patients
+        description: One row per synthetic patient with demographics and identity attributes.
+        columns:
+          - name: id
+            description: Primary key — patient UUID
+            tests:
+              - unique
+              - not_null
+
+      - name: encounters
+        description: Clinical encounters (visits) for patients across all care settings.
+        columns:
+          - name: id
+            description: Primary key — encounter UUID
+            tests:
+              - unique
+              - not_null
+          - name: patient
+            description: Foreign key to patients.id
+            tests:
+              - not_null
+
+      - name: conditions
+        description: Patient diagnosed conditions with onset and resolution dates.
+        columns:
+          - name: patient
+            tests:
+              - not_null
+          - name: encounter
+            tests:
+              - not_null
+
+      - name: medications
+        description: Medications prescribed during encounters.
+
+      - name: procedures
+        description: Procedures performed during encounters.
+
+      - name: observations
+        description: Clinical observations — labs, vitals, measurements.
+
+      - name: allergies
+        description: Patient allergies.
+
+      - name: immunizations
+        description: Vaccinations administered.
+
+      - name: careplans
+        description: Care plans assigned to patients.
+
+      - name: imaging_studies
+        description: Radiology / imaging studies performed.
+
+      - name: organizations
+        description: Healthcare provider organizations.
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+
+      - name: providers
+        description: Individual healthcare providers (clinicians).
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+
+      - name: payers
+        description: Insurance payers / health plans.
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+
+      - name: payer_transitions
+        description: History of patient insurance coverage changes.
+
+      - name: claims
+        description: Insurance claims submitted.
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+
+      - name: claims_transactions
+        description: Line-item transactions on insurance claims.
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+
+      - name: devices
+        description: Medical devices assigned to patients.
+
+      - name: supplies
+        description: Medical supplies dispensed.

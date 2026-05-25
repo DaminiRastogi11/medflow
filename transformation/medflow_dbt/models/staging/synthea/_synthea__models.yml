@@ -1,0 +1,198 @@
+version: 2
+
+models:
+  - name: stg_synthea__patients
+    description: >
+      Cleaned, typed patient records — one row per synthetic patient.
+      Includes demographics, identity attributes, address, and lifetime financials.
+    columns:
+      - name: patient_id
+        description: Primary key — synthetic patient UUID
+        tests:
+          - unique
+          - not_null
+      - name: gender
+        description: Self-reported gender
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['M', 'F']
+              config:
+                severity: warn
+      - name: birth_date
+        description: Patient birth date
+        tests:
+          - not_null
+      - name: is_deceased
+        description: Flag indicating whether the patient has a recorded death date
+        tests:
+          - not_null
+      - name: current_age_or_age_at_death
+        description: Age now if living, or age at death if deceased
+
+  - name: stg_synthea__encounters
+    description: One row per clinical encounter (visit), typed and renamed.
+    columns:
+      - name: encounter_id
+        tests:
+          - unique
+          - not_null
+      - name: patient_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_synthea__patients')
+                field: patient_id
+      - name: encounter_class
+        description: Type of encounter — ambulatory, emergency, inpatient, etc.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['ambulatory', 'emergency', 'inpatient', 'outpatient', 'wellness', 'urgentcare', 'home', 'hospice', 'snf', 'virtual']
+              config:
+                severity: warn
+      - name: encounter_start_at
+        tests:
+          - not_null
+      - name: duration_minutes
+        description: Duration of the encounter in minutes (end - start)
+
+  - name: stg_synthea__conditions
+    description: Patient diagnoses with onset, resolution, and active flag.
+    columns:
+      - name: patient_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_synthea__patients')
+                field: patient_id
+      - name: encounter_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_synthea__encounters')
+                field: encounter_id
+              config:
+                severity: warn
+      - name: is_active
+        tests:
+          - not_null
+
+  - name: stg_synthea__medications
+    description: Medication prescriptions with cost and coverage details.
+    columns:
+      - name: patient_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_synthea__patients')
+                field: patient_id
+
+  - name: stg_synthea__procedures
+    description: Procedures performed during clinical encounters.
+    columns:
+      - name: patient_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_synthea__patients')
+                field: patient_id
+
+  - name: stg_synthea__observations
+    description: >
+      Clinical observations including labs, vitals, and measurements.
+      Largest staging table by row count (~63K rows).
+    columns:
+      - name: patient_id
+        tests:
+          - not_null
+      - name: observation_category
+        description: Category — e.g. vital-signs, laboratory, survey
+
+  - name: stg_synthea__allergies
+    description: Patient allergies with reactions and severity.
+
+  - name: stg_synthea__immunizations
+    description: Vaccinations administered by encounter.
+
+  - name: stg_synthea__careplans
+    description: Care plans assigned to patients (e.g., diabetes management).
+
+  - name: stg_synthea__imaging_studies
+    description: Radiology / imaging studies and modalities performed.
+
+  - name: stg_synthea__devices
+    description: Medical devices assigned to patients.
+
+  - name: stg_synthea__supplies
+    description: Medical supplies dispensed during care.
+
+  - name: stg_synthea__organizations
+    description: Healthcare provider organizations (hospitals, clinics).
+    columns:
+      - name: organization_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_synthea__providers
+    description: Individual healthcare providers (clinicians).
+    columns:
+      - name: provider_id
+        tests:
+          - unique
+          - not_null
+      - name: organization_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_synthea__organizations')
+                field: organization_id
+
+  - name: stg_synthea__payers
+    description: Insurance payers / health plans.
+    columns:
+      - name: payer_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_synthea__payer_transitions
+    description: Patient insurance coverage history.
+    columns:
+      - name: patient_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_synthea__patients')
+                field: patient_id
+
+  - name: stg_synthea__claims
+    description: Insurance claims submitted for patient services.
+    columns:
+      - name: claim_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_synthea__claims_transactions
+    description: >
+      Line-item transactions on insurance claims.
+      Largest financial table by row count (~84K rows).
+    columns:
+      - name: transaction_id
+        tests:
+          - unique
+          - not_null
+      - name: claim_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_synthea__claims')
+                field: claim_id
+              config:
+                severity: warn
