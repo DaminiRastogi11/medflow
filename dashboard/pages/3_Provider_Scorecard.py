@@ -13,15 +13,13 @@ from components.style import apply_style, page_header, COLORS, PLOTLY_TEMPLATE
 
 st.set_page_config(
     page_title="MedFlow — Provider Scorecard",
-    page_icon="👩‍⚕️",
     layout="wide",
 )
 apply_style()
 
 page_header(
     title="Provider Scorecard",
-    subtitle="Volume, quality, and financial performance across the provider network",
-    icon="👩‍⚕️",
+    subtitle="Provider Performance Metrics",
 )
 
 
@@ -91,8 +89,7 @@ st.markdown("---")
 # ============================================================================
 st.markdown("### Volume vs Revenue")
 st.markdown(
-    "<p style='color: #6B7280;'>Bubble size = unique patients. "
-    "Outliers (high volume, low revenue or vice versa) are worth investigating.</p>",
+    "<p style='color: #6B7280;'>Bubble size represents patient count.</p>",
     unsafe_allow_html=True,
 )
 

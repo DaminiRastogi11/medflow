@@ -29,7 +29,6 @@ from components.style import apply_style, page_header, COLORS, PLOTLY_TEMPLATE
 # ============================================================================
 st.set_page_config(
     page_title="MedFlow — Executive Overview",
-    page_icon="🏥",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -41,8 +40,7 @@ apply_style()
 # ============================================================================
 page_header(
     title="MedFlow",
-    subtitle="Healthcare analytics platform — executive overview",
-    icon="🏥",
+    subtitle="Executive Overview",
 )
 
 
@@ -77,10 +75,6 @@ col_left, col_right = st.columns([3, 2])
 
 with col_left:
     st.markdown("### Encounter Volume Trend")
-    st.markdown(
-        "<p style='color: #6B7280; margin-top: -0.5rem;'>Monthly encounters across all care settings</p>",
-        unsafe_allow_html=True,
-    )
 
     trend_df = query("""
         select
@@ -110,10 +104,6 @@ with col_left:
 
 with col_right:
     st.markdown("### Chronic Disease Prevalence")
-    st.markdown(
-        "<p style='color: #6B7280; margin-top: -0.5rem;'>Patients by condition (overlapping)</p>",
-        unsafe_allow_html=True,
-    )
 
     chronic_df = query("""
         select
@@ -190,14 +180,3 @@ st.dataframe(
 )
 
 
-# ============================================================================
-# FOOTER
-# ============================================================================
-st.markdown("---")
-st.markdown(
-    "<p style='color: #6B7280; font-size: 0.85rem; text-align: center;'>"
-    "Built with dbt + MotherDuck + Streamlit · "
-    "<a href='https://github.com/DaminiRastogi11/medflow' target='_blank'>GitHub</a>"
-    "</p>",
-    unsafe_allow_html=True,
-)
