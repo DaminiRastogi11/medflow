@@ -1,6 +1,0 @@
-streamlit
-plotly
-altair
-duckdb==1.5.2
-pandas
-python-dotenv
