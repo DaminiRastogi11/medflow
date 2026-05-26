@@ -1,109 +1,189 @@
-# MedFlow
+# 🏥 MedFlow
 
-> Production-grade healthcare analytics platform demonstrating the modern data stack — from ingestion through transformation, orchestration, quality monitoring, and self-service BI.
+> **Production-grade healthcare analytics platform** — a complete demonstration of the modern data stack from raw CSV ingestion through cloud warehousing, dimensional modeling, data quality testing, and self-service BI.
 
-![Status](https://img.shields.io/badge/status-in--progress-orange)
-![Stack](https://img.shields.io/badge/stack-modern--data--stack-blue)
+🔗 **[Live Dashboard](https://medflow-damini.streamlit.app)** &nbsp;·&nbsp; 📊 **[dbt Lineage & Docs](https://daminirastogi11.github.io/medflow/)** &nbsp;·&nbsp; ⚙️ **[CI Status](https://github.com/DaminiRastogi11/medflow/actions)**
+
+![dbt CI](https://github.com/DaminiRastogi11/medflow/actions/workflows/dbt-ci.yml/badge.svg)
+![Deploy Docs](https://github.com/DaminiRastogi11/medflow/actions/workflows/deploy-dbt-docs.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.12-blue)
-![dbt](https://img.shields.io/badge/dbt-core-orange)
-![Snowflake](https://img.shields.io/badge/snowflake-trial-blue)
+![dbt](https://img.shields.io/badge/dbt-1.11-orange)
+![MotherDuck](https://img.shields.io/badge/warehouse-MotherDuck-yellow)
+![Streamlit](https://img.shields.io/badge/dashboard-Streamlit-red)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-## What this project demonstrates
+---
 
-- **End-to-end analytics engineering**: synthetic patient + claims data flows from raw CSV through staging, intermediate, and dimensional marts into a Streamlit + Power BI experience
-- **Production patterns**: data quality testing, lineage documentation, orchestration with retries and alerting, infrastructure as code, and CI/CD on every pull request
-- **Warehouse-agnostic design**: identical pipeline runs on Snowflake or DuckDB/MotherDuck via a single config switch — showcases pragmatic tradeoffs between enterprise warehouses and lakehouse alternatives
+## 🚀 What MedFlow Demonstrates
 
-## Architecture
+A complete analytics engineering stack built end-to-end:
 
-> _Architecture diagram coming end of Week 1_
+- **Ingestion**: `dlt` pipeline loading 18 Synthea healthcare entities (~193K rows) into a cloud warehouse with merge-based incremental loading
+- **Warehousing**: MotherDuck (cloud DuckDB) primary target with Snowflake adapter retained — warehouse-agnostic by design
+- **Transformation**: `dbt-core` with staging → intermediate → marts layered architecture, dimensional model (star schema), and SCD Type 2 scaffolding on the patient dimension
+- **Quality**: 108 data tests covering primary key uniqueness, referential integrity across the patient → encounter → claim graph, accepted-values constraints, and configurable thresholds
+- **Orchestration & CI/CD**: GitHub Actions runs `dbt build` on every pull request; dbt docs auto-deploy to GitHub Pages on every merge to `main`
+- **Visualization**: Multi-page Streamlit dashboard reading from the dbt marts, with executive KPIs, population health heatmaps, readmission analysis, and provider scorecards
 
-**Data flow**: Synthea synthetic patient data + CMS public datasets → `dlt` ingestion → Snowflake `RAW` schema → `dbt` staging models → intermediate models → dimensional marts (star schema) → Streamlit dashboard + Power BI reports
+## 📐 Architecture
 
-**Orchestration**: Dagster jobs schedule dlt + dbt runs with retries, alerting, and failure isolation
-**Quality**: dbt tests + Elementary observability + Great Expectations checks
-**CI/CD**: GitHub Actions runs dbt build + test on every PR with results posted as PR comments
-**Infra**: Terraform manages Snowflake roles, warehouses, and databases
+![MedFlow Architecture](docs/architecture.png)
 
-## Tech Stack
+Five layers, each with its own materialization strategy:
 
-| Layer | Tool |
-|---|---|
-| Ingestion | dlt (data load tool) |
-| Warehouse | Snowflake + DuckDB/MotherDuck |
-| Transformation | dbt Core |
-| Orchestration | Dagster |
-| Data Quality | dbt tests + Elementary + Great Expectations |
-| BI | Streamlit, Power BI |
-| IaC | Terraform |
-| CI/CD | GitHub Actions |
-| Language | Python 3.12 |
+| Layer | Materialization | Purpose |
+|---|---|---|
+| **Sources** (`raw`) | dlt-loaded tables | Raw Synthea CSV data, untouched |
+| **Staging** (`staging`) | Views | Type casts, snake_case renaming, audit columns |
+| **Intermediate** (`intermediate`) | Ephemeral CTEs | Reusable business logic (chronic conditions, readmission flags) |
+| **Marts — Core** (`marts`) | Tables | Star schema: dim_patient, dim_provider, dim_date, fct_encounters, fct_diagnoses |
+| **Marts — Analytics** (`marts`) | Tables | Executive-ready: readmission rates, chronic disease panel, provider scorecard |
 
-## Dataset
+## 📊 Dashboard Preview
 
-Synthetic patient records from [Synthea](https://synthea.mitre.org/) (MITRE Corporation) — 1,000 synthetic patients with complete medical histories spanning encounters, conditions, medications, procedures, observations, and care plans. No real PHI. Augmented with public CMS Medicare provider utilization data.
+The live Streamlit app surfaces the marts through four interactive pages:
 
-**Scale at a glance:**
-- _Fill in after Day 1 exploration_
+### Executive Overview
+![Home Dashboard](docs/dashboard_home.png)
 
-## Project Structure
+### Population Health
+![Population Health](docs/dashboard_population_health.png)
+
+### Readmissions Analysis
+![Readmissions](docs/dashboard_readmissions.png)
+
+### Provider Scorecard
+![Provider Scorecard](docs/dashboard_providers.png)
+
+## 🧬 Data Lineage
+
+Auto-generated by dbt, deployed to GitHub Pages:
+
+![Lineage Graph](docs/lineage_graph_day4.png)
+
+**[Browse the full interactive docs →](https://daminirastogi11.github.io/medflow/)**
+
+## 🛠️ Tech Stack
+
+| Layer | Tool | Why |
+|---|---|---|
+| Ingestion | [dlt](https://dlthub.com/) | Modern Python EL with schema inference and merge semantics |
+| Warehouse | [MotherDuck](https://motherduck.com/) | Cloud DuckDB — token auth, fast, dbt-compatible |
+| Transformation | [dbt-core](https://docs.getdbt.com/) | SQL transformations as code, with tests and lineage |
+| Quality | dbt tests | Referential integrity, value constraints, configurable thresholds |
+| BI | [Streamlit](https://streamlit.io/) + [Plotly](https://plotly.com/) | Interactive Python dashboards |
+| Orchestration | [Dagster](https://dagster.io/) | (local scaffolding for production orchestration) |
+| Package management | [uv](https://docs.astral.sh/uv/) | Fast, modern Python package management |
+| CI/CD | GitHub Actions | dbt build on every PR, docs deploy on merge |
+
+## 📂 Project Structure
 
 medflow/
-├── ingestion/          # dlt pipelines (Synthea, CMS)
-├── transformation/     # dbt project (staging → intermediate → marts)
-├── orchestration/      # Dagster assets and jobs
-├── dashboard/          # Streamlit analytics app
-├── infra/              # Terraform for Snowflake resources
-├── tests/              # End-to-end pipeline tests
-├── docs/               # Architecture diagram, ADRs, screenshots
-└── .github/workflows/  # CI/CD pipelines
+├── ingestion/                    # dlt pipelines (Synthea → warehouse)
+├── transformation/medflow_dbt/   # dbt project
+│   ├── models/
+│   │   ├── staging/synthea/      # 18 cleaned staging views
+│   │   ├── intermediate/         # Business logic CTEs (ephemeral)
+│   │   └── marts/
+│   │       ├── core/             # Star schema (dims + facts)
+│   │       └── analytics/        # 3 analytical marts
+│   └── macros/
+│       └── generate_schema_name.sql
+├── dashboard/                    # Streamlit app
+│   ├── Home.py
+│   ├── pages/
+│   └── components/
+├── orchestration/                # Dagster jobs (local)
+├── docs/                         # Screenshots, diagrams
+├── scripts/                      # Dev tooling (dbt.ps1 wrapper)
+├── .github/workflows/            # CI/CD (dbt-ci, deploy-dbt-docs)
+├── pyproject.toml                # Project dependencies (uv-managed)
+├── uv.lock                       # Locked dependency versions
+└── README.md
 
-## Quick Start
+## 🚦 Quick Start
 
 ```bash
-# Clone
+# 1. Clone
 git clone https://github.com/DaminiRastogi11/medflow.git
 cd medflow
 
-# Install dependencies (uses uv)
+# 2. Install dependencies
 uv sync
 
-# Configure
+# 3. Configure secrets
 cp .env.example .env
-# Edit .env with your Snowflake or MotherDuck credentials
+# Edit .env with your MOTHERDUCK_TOKEN
 
-# Download Synthea sample data to data/raw/synthea/
-# Get it from: https://synthea.mitre.org/downloads
+# 4. Download Synthea sample data to data/raw/synthea/
+# Grab the "100 Sample CSV" pack from: https://synthea.mitre.org/downloads
 
-# Ingest
-uv run python ingestion/synthea_pipeline.py
+# 5. Ingest raw data
+uv run python ingestion/synthea_pipeline.py --destination motherduck
 
-# Transform
-cd transformation/medflow_dbt
-uv run dbt build
+# 6. Build the dbt models + run all 108 tests
+.\scripts\dbt.ps1 build
+
+# 7. Launch the Streamlit dashboard
+uv run streamlit run dashboard/Home.py
 ```
 
-## Roadmap
+## 📈 At a Glance
 
-- **Week 1** ✅ Foundation, ingestion, dimensional model
-- **Week 2** ⏳ Data quality, orchestration, Terraform, CI/CD
-- **Week 3** ⏳ Streamlit + Power BI dashboards, deployment, blog post
+| Metric | Value |
+|---|---|
+| Source entities | 18 healthcare CSVs |
+| Total rows ingested | 193,257 |
+| dbt models | 28 (18 staging · 2 intermediate · 3 dims · 2 facts · 3 marts) |
+| Data quality tests | 108 (all passing) |
+| Full dbt build time | ~25 seconds |
+| Dashboard pages | 4 (Home, Population, Readmissions, Providers) |
+| Cost to run | $0 (free tiers throughout) |
 
-## Status
+## 🎓 What I Learned
 
-🚧 **Building in public** — follow along on [LinkedIn](https://www.linkedin.com/in/damini-rastogi/) (handle TBD)
+Building MedFlow surfaced real-world engineering decisions that don't show up in tutorials:
 
-Day 1 complete: project scaffold, dependencies, data acquired and validated.
+- **Warehouse-agnostic design pays off.** When Snowflake's MFA-on-PAT requirement broke local CI, swapping to MotherDuck took one config change because dlt's destination abstraction held up. Hard-coded warehouse choices age badly.
+- **Test thresholds beat binary tests.** Pure `not_null` / `relationships` tests fail too loud on real-world data. Using `warn_if: ">= 100"` on the dim_date relationship test let me surface drift without breaking CI on known source-data gaps.
+- **The lockfile is the source of truth.** Streamlit Cloud silently preferred my stale `uv.lock` over `requirements.txt`, which is why plotly mysteriously wouldn't install. Lesson: `uv lock` after every dependency change, commit immediately.
+- **Schema separation is one macro away.** dbt's default behavior suffixes model-level schemas onto the profile schema (`staging` + `marts` = `staging_marts`). Overriding `generate_schema_name` gives you clean physical schemas without fighting dbt's defaults.
+- **Generate CI credentials at runtime.** profiles.yml stays gitignored; CI generates a fresh one with env-injected secrets each run. Same pattern scales to Dagster/Airflow in production.
+- **dbt exposures are free senior-signal.** Declaring downstream consumers (Streamlit, Power BI) in YAML adds zero compute cost but gives your lineage graph immediate enterprise feel.
 
-## License
+## 💸 Operational Cost
 
-MIT
+Running this entire stack on free tiers:
 
-**Scale at a glance:**
-- 18 source CSV files (~58 MB raw)
-- 193,257 total rows across all entities
-- 106 patients with 4,930 encounters (~46 encounters per patient avg)
-- 63,427 clinical observations (labs, vitals, measurements)
-- 3,506 conditions · 3,579 medications · 14,285 procedures
-- 8,509 insurance claims with 84,359 line-item transactions
-- Full longitudinal medical histories spanning births through deaths
+- **MotherDuck**: Free tier (100 patient sample uses negligible compute)
+- **Streamlit Community Cloud**: Free hosting
+- **GitHub Actions**: 2,000 free minutes/month for public repos
+- **GitHub Pages**: Free for public repos
+- **Snowflake**: 30-day trial credits (adapter retained for enterprise demo)
+
+**Total monthly cost: $0.**
+
+## 🔮 Roadmap
+
+Possible next iterations:
+
+- [ ] Dagster job scheduling the dlt + dbt run on a daily cadence
+- [ ] `dbt snapshot` capturing real SCD Type 2 history on patient address changes
+- [ ] Great Expectations integration for column-level statistical assertions
+- [ ] A LangChain-powered "ask MedFlow" natural-language SQL agent over the marts
+- [ ] Power BI report rebuild of the same marts for a side-by-side BI comparison
+
+## 📬 Contact
+
+Built by **Damini Rastogi** — Data / Analytics Engineer
+- 📧 [damini.info11@gmail.com](mailto:damini.info11@gmail.com)
+- 💼 [LinkedIn](https://www.linkedin.com/in/damini-rastogi-87b5a73aa/)
+- 🐙 [GitHub](https://github.com/DaminiRastogi11)
+
+---
+
+## 📜 License
+
+MIT — see [LICENSE](LICENSE) for details.
+
+**Data source**: [Synthea by MITRE Corporation](https://synthea.mitre.org/) — fully synthetic, no PHI.
