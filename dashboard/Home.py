@@ -4,6 +4,18 @@ MedFlow — Executive Overview (landing page).
 High-level KPIs and trends for hospital leadership and care quality teams.
 """
 
+"""
+MedFlow — Executive Overview (landing page).
+...
+"""
+
+import sys
+from pathlib import Path
+
+# Ensure dashboard/ is on the Python path so we can import from components/
+sys.path.insert(0, str(Path(__file__).parent))
+
+
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
