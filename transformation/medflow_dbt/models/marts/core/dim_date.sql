@@ -11,7 +11,7 @@ with date_spine as (
     -- Synthea data ranges across this period
     select
         cast(range as date) as date_day
-    from range(date '1950-01-01', date '2026-01-01', interval 1 day)
+    from range(date '1930-01-01', date '2031-01-01', interval 1 day)
 
 ),
 
