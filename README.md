@@ -150,6 +150,25 @@ uv run python ingestion/synthea_pipeline.py --destination motherduck
 uv run streamlit run dashboard/Home.py
 ```
 
+##  Raw Dataset
+
+The MedFlow project uses **[Synthea](https://synthea.mitre.org/)** — a synthetic patient data generator by MITRE Corporation — as its data source.
+
+**Dataset Details:**
+- **Source**: [Synthea Downloads](https://synthea.mitre.org/downloads)
+- **Sample Used**: 100-patient CSV pack (~193K rows across 18 files)
+- **18 Healthcare Entities**:
+  - `patients`, `encounters`, `providers`, `organizations`, `conditions`, `medications`, `allergies`, `procedures`, `observations`, `immunizations`, `careplans`, `claims`, `claim_transactions`, `devices`, `care_team_members`, `payer_transitions`, `expenses`, `supplies`
+- **Data Characteristics**:
+  - **100% Synthetic** — no real patient data (no PHI)
+  - **Realistic** — clinically accurate healthcare events
+  - **Reproducible** — seed-based generation for consistent sample sets
+  - **Production-grade** — used in healthcare data engineering training and demonstrations
+- **Download Size**: ~5 MB (CSV pack)
+- **Load Time**: ~5–10 seconds via dlt into MotherDuck
+
+To use a different sample size (e.g., 1K or 10K patients), download from the Synthea downloads page and adjust the `data/raw/synthea/` directory accordingly. All dlt + dbt transformations scale automatically.
+
 ##  At a Glance
 
 | Metric | Value |
