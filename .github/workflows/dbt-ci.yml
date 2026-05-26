@@ -51,6 +51,25 @@ jobs:
         working-directory: transformation/medflow_dbt
         run: uv run dbt deps
 
+      - name: Generate dbt profiles.yml for CI
+        working-directory: transformation/medflow_dbt
+        run: |
+          cat > profiles.yml << 'EOF'
+          medflow_dbt:
+            target: dev
+            outputs:
+              dev:
+                type: duckdb
+                path: "md:medflow?motherduck_token={{ env_var('MOTHERDUCK_TOKEN') }}"
+                schema: staging
+                threads: 4
+                extensions:
+                  - httpfs
+                  - parquet
+          EOF
+          echo "Generated profiles.yml:"
+          cat profiles.yml
+
       - name: dbt parse (catch compilation errors early)
         working-directory: transformation/medflow_dbt
         run: uv run dbt parse
