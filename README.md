@@ -27,7 +27,7 @@ A complete analytics engineering stack built end-to-end:
 
 ## 📐 Architecture
 
-![MedFlow Architecture](docs/architecture.png)
+**Data flow**: Synthea CSVs → `dlt` ingestion → MotherDuck (`raw` schema) → `dbt` staging views → ephemeral intermediate CTEs → dimensional marts (star schema) → Streamlit dashboard + Power BI
 
 Five layers, each with its own materialization strategy:
 
