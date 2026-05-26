@@ -27,8 +27,7 @@ jobs:
 
     env:
       MOTHERDUCK_TOKEN: ${{ secrets.MOTHERDUCK_TOKEN }}
-      DBT_PROFILES_DIR: ./transformation/medflow_dbt
-      # CI runs against an ephemeral schema to avoid touching dev
+      DBT_PROFILES_DIR: .
       DBT_TARGET: dev
 
     steps:
