@@ -254,3 +254,5 @@ Thumbs.db
 
 # uv lock files we DO want to commit (uv.lock) — pyproject.toml already in
 # Don't ignore uv.lock!
+
+**/.streamlit/secrets.toml
