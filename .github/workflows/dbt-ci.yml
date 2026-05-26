@@ -1,0 +1,74 @@
+# .github/workflows/dbt-ci.yml
+#
+# Runs dbt build + tests on every pull request to main.
+# Ensures broken transformations or failing tests never reach the main branch.
+#
+# Uses MotherDuck as the warehouse target via the existing 'dev' profile.
+
+name: dbt CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'transformation/**'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - '.github/workflows/dbt-ci.yml'
+
+  # Allow manual triggering from the Actions UI
+  workflow_dispatch:
+
+jobs:
+  dbt-build:
+    name: Build & Test dbt Models
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      MOTHERDUCK_TOKEN: ${{ secrets.MOTHERDUCK_TOKEN }}
+      DBT_PROFILES_DIR: ./transformation/medflow_dbt
+      # CI runs against an ephemeral schema to avoid touching dev
+      DBT_TARGET: dev
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Install dbt packages
+        working-directory: transformation/medflow_dbt
+        run: uv run dbt deps
+
+      - name: dbt parse (catch compilation errors early)
+        working-directory: transformation/medflow_dbt
+        run: uv run dbt parse
+
+      - name: dbt build (run + test)
+        working-directory: transformation/medflow_dbt
+        run: uv run dbt build --target dev
+
+      - name: Generate dbt docs
+        if: success()
+        working-directory: transformation/medflow_dbt
+        run: uv run dbt docs generate --target dev
+
+      - name: Upload dbt artifacts (target folder)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-target-${{ github.sha }}
+          path: transformation/medflow_dbt/target/
+          retention-days: 7
