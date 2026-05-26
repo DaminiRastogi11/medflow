@@ -13,15 +13,13 @@ from components.style import apply_style, page_header, COLORS, PLOTLY_TEMPLATE
 
 st.set_page_config(
     page_title="MedFlow — Population Health",
-    page_icon="🩺",
     layout="wide",
 )
 apply_style()
 
 page_header(
     title="Population Health",
-    subtitle="Chronic disease prevalence across demographic segments",
-    icon="🩺",
+    subtitle="Chronic Disease Analysis",
 )
 
 
@@ -73,10 +71,6 @@ st.markdown("---")
 # HEATMAP — PREVALENCE BY AGE + GENDER
 # ============================================================================
 st.markdown("### Disease Prevalence Heatmap")
-st.markdown(
-    "<p style='color: #6B7280;'>Percent of segment with each condition</p>",
-    unsafe_allow_html=True,
-)
 
 disease_cols = [
     ("diabetes_prevalence_pct",       "Diabetes"),

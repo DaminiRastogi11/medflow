@@ -13,15 +13,13 @@ from components.style import apply_style, page_header, COLORS, PLOTLY_TEMPLATE
 
 st.set_page_config(
     page_title="MedFlow — Readmissions",
-    page_icon="🔄",
     layout="wide",
 )
 apply_style()
 
 page_header(
     title="Readmissions Analysis",
-    subtitle="30-day inpatient readmission patterns — a CMS quality metric tied to reimbursement",
-    icon="🔄",
+    subtitle="30-Day Readmission Patterns",
 )
 
 
@@ -53,7 +51,7 @@ st.markdown("---")
 # ============================================================================
 st.markdown("### Readmission Rate by Chronic Disease Status")
 st.markdown(
-    "<p style='color: #6B7280;'>Patients with chronic conditions typically have higher readmission risk.</p>",
+    "<p style='color: #6B7280;'>Patients with chronic conditions show higher readmission risk.</p>",
     unsafe_allow_html=True,
 )
 

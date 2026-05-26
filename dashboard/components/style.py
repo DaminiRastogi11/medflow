@@ -79,12 +79,9 @@ def apply_style():
     st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
 
-def page_header(title: str, subtitle: str | None = None, icon: str | None = None):
+def page_header(title: str, subtitle: str | None = None):
     """Render a consistent page header."""
-    if icon:
-        st.markdown(f"# {icon} {title}")
-    else:
-        st.markdown(f"# {title}")
+    st.markdown(f"# {title}")
     if subtitle:
         st.markdown(
             f"<p style='color: #6B7280; margin-top: -0.5rem; margin-bottom: 1.5rem;'>{subtitle}</p>",
