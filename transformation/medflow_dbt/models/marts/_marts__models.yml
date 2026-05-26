@@ -1,0 +1,124 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: >
+      Calendar date dimension spanning 1950–2025 with year/quarter/month
+      attributes, weekend/weekday flags, US federal holidays, and fiscal year.
+      Used by every fact table for time-based analytics.
+    columns:
+      - name: date_key
+        description: Surrogate key — date in YYYYMMDD integer form
+        tests:
+          - unique
+          - not_null
+      - name: full_date
+        tests:
+          - unique
+          - not_null
+      - name: year_number
+        tests:
+          - not_null
+
+  - name: dim_patient
+    description: >
+      Conformed patient dimension with demographics, address, lifetime financials,
+      and chronic condition flags. One row per patient. SCD Type 2 scaffolding in place.
+    columns:
+      - name: patient_sk
+        description: Surrogate key (md5 hash of patient_id)
+        tests:
+          - unique
+          - not_null
+      - name: patient_id
+        description: Natural key — Synthea patient UUID
+        tests:
+          - unique
+          - not_null
+      - name: gender
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['M', 'F']
+              config:
+                severity: warn
+      - name: age_bracket
+        description: Categorical age bucket for demographic analysis
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['Pediatric (0-17)', 'Young Adult (18-34)', 'Adult (35-49)', 'Middle-Aged (50-64)', 'Senior (65-79)', 'Elderly (80+)']
+      - name: is_current
+        tests:
+          - not_null
+
+  - name: dim_provider
+    description: Conformed provider dimension with specialty and organization context.
+    columns:
+      - name: provider_sk
+        tests:
+          - unique
+          - not_null
+      - name: provider_id
+        tests:
+          - unique
+          - not_null
+
+  - name: fct_encounters
+    description: >
+      Encounter fact table — one row per clinical visit. Includes derived
+      readmission flag, encounter sequence per patient, and full financial breakdown.
+    columns:
+      - name: encounter_id
+        tests:
+          - unique
+          - not_null
+      - name: patient_sk
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_patient')
+                field: patient_sk
+      - name: encounter_start_date_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+      - name: is_30day_readmission
+        tests:
+          - not_null
+
+  - name: fct_diagnoses
+    description: Diagnosis fact table — one row per patient-condition-encounter.
+    columns:
+      - name: diagnosis_sk
+        tests:
+          - unique
+          - not_null
+      - name: patient_sk
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_patient')
+                field: patient_sk
+
+  - name: mart_30day_readmission_rates
+    description: 30-day inpatient readmission rates by demographic, chronic status, and month.
+
+  - name: mart_chronic_disease_panel
+    description: Chronic disease prevalence by age and gender segments.
+
+  - name: mart_provider_utilization_scorecard
+    description: Provider performance scorecard with volume, quality, financial, and ranking metrics.
+    columns:
+      - name: provider_sk
+        tests:
+          - unique
+          - not_null
+      - name: volume_rank
+        tests:
+          - not_null

@@ -22,15 +22,15 @@ clean-targets:
 # ============================================================================
 models:
   medflow_dbt:
-    # Staging models: lightweight, materialized as views
     staging:
       +materialized: view
-    # Intermediate: ephemeral CTEs (no warehouse footprint)
+      +schema: staging
     intermediate:
       +materialized: ephemeral
-    # Marts: physical tables for query performance
+      +schema: intermediate
     marts:
       +materialized: table
+      +schema: marts
 
 # ============================================================================
 # Test configuration

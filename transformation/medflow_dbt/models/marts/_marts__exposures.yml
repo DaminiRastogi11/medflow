@@ -1,0 +1,36 @@
+version: 2
+
+exposures:
+
+  - name: medflow_streamlit_dashboard
+    type: dashboard
+    maturity: medium
+    url: http://localhost:8501
+    description: >
+      MedFlow analytics dashboard — interactive Streamlit application
+      surfacing readmission rates, chronic disease prevalence, and provider
+      scorecards to executives and care quality teams.
+
+    depends_on:
+      - ref('mart_30day_readmission_rates')
+      - ref('mart_chronic_disease_panel')
+      - ref('mart_provider_utilization_scorecard')
+
+    owner:
+      name: Damini Rastogi
+      email: damini.info11@gmail.com
+
+  - name: medflow_powerbi_executive_report
+    type: dashboard
+    maturity: low
+    description: >
+      Executive-level Power BI report aggregating quality metrics, financial
+      summaries, and provider performance for monthly leadership reviews.
+
+    depends_on:
+      - ref('mart_30day_readmission_rates')
+      - ref('mart_provider_utilization_scorecard')
+
+    owner:
+      name: Damini Rastogi
+      email: damini.info11@gmail.com
