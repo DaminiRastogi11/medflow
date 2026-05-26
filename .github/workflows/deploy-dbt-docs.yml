@@ -54,16 +54,6 @@ jobs:
         working-directory: transformation/medflow_dbt
         run: uv run dbt deps
 
-      - name: dbt parse + compile
-        working-directory: transformation/medflow_dbt
-        run: |
-          uv run dbt parse
-          uv run dbt compile --target dev
-
-      - name: Generate dbt docs
-        working-directory: transformation/medflow_dbt
-        run: uv run dbt docs generate --target dev
-
       - name: Generate dbt profiles.yml for CI
         working-directory: transformation/medflow_dbt
         run: |
@@ -80,6 +70,18 @@ jobs:
                   - httpfs
                   - parquet
           EOF
+          echo "Generated profiles.yml:"
+          cat profiles.yml
+
+      - name: dbt parse + compile
+        working-directory: transformation/medflow_dbt
+        run: |
+          uv run dbt parse
+          uv run dbt compile --target dev
+
+      - name: Generate dbt docs
+        working-directory: transformation/medflow_dbt
+        run: uv run dbt docs generate --target dev
 
       - name: Prepare docs for Pages
         run: |

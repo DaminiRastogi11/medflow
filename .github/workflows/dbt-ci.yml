@@ -1,9 +1,6 @@
 # .github/workflows/dbt-ci.yml
 #
 # Runs dbt build + tests on every pull request to main.
-# Ensures broken transformations or failing tests never reach the main branch.
-#
-# Uses MotherDuck as the warehouse target via the existing 'dev' profile.
 
 name: dbt CI
 
@@ -16,7 +13,6 @@ on:
       - 'uv.lock'
       - '.github/workflows/dbt-ci.yml'
 
-  # Allow manual triggering from the Actions UI
   workflow_dispatch:
 
 jobs:
@@ -67,8 +63,6 @@ jobs:
                   - httpfs
                   - parquet
           EOF
-          echo "Generated profiles.yml:"
-          cat profiles.yml
 
       - name: dbt parse (catch compilation errors early)
         working-directory: transformation/medflow_dbt
