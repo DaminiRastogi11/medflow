@@ -27,7 +27,27 @@ A complete analytics engineering stack built end-to-end:
 
 ## 📐 Architecture
 
-**Data flow**: Synthea CSVs → `dlt` ingestion → MotherDuck (`raw` schema) → `dbt` staging views → ephemeral intermediate CTEs → dimensional marts (star schema) → Streamlit dashboard + Power BI
+```mermaid
+flowchart LR
+    A[Synthea CSVs<br/>18 files · 193K rows] -->|dlt| B[(MotherDuck<br/>raw schema)]
+    B -->|dbt staging| C[18 Staging Views<br/>typed · renamed · tested]
+    C -->|dbt intermediate| D[Ephemeral CTEs<br/>chronic flags · readmission logic]
+    D -->|dbt marts core| E[Star Schema<br/>3 dims · 2 facts]
+    E -->|dbt marts analytics| F[Analytical Marts<br/>readmissions · chronic · providers]
+    F -->|dbt exposures| G[Streamlit Dashboard]
+    F -->|dbt exposures| H[Power BI Reports]
+
+    style A fill:#FFE4B5,stroke:#1F4E79,stroke-width:2px
+    style B fill:#B3D9FF,stroke:#1F4E79,stroke-width:2px
+    style C fill:#B3D9FF,stroke:#1F4E79,stroke-width:2px
+    style D fill:#D4D4D4,stroke:#1F4E79,stroke-width:2px,stroke-dasharray: 5 5
+    style E fill:#9FE2BF,stroke:#1F4E79,stroke-width:2px
+    style F fill:#9FE2BF,stroke:#1F4E79,stroke-width:2px
+    style G fill:#FFB6C1,stroke:#1F4E79,stroke-width:2px
+    style H fill:#FFB6C1,stroke:#1F4E79,stroke-width:2px
+```
+
+**Quality & CI/CD layer:** 108 dbt tests · GitHub Actions runs `dbt build` on every PR · dbt docs auto-deploy to GitHub Pages on merge
 
 Five layers, each with its own materialization strategy:
 
