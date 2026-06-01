@@ -1,6 +1,6 @@
-#  MedFlow
+#  MedFlow — End-to-End dbt + Modern Data Stack Project
 
-> **Production-grade healthcare analytics platform** — a complete demonstration of the modern data stack from raw CSV ingestion through cloud warehousing, dimensional modeling, data quality testing, and self-service BI.
+> **A complete end-to-end data engineering portfolio project** demonstrating the modern data stack from raw CSV ingestion through cloud warehousing, dimensional modeling, data quality testing, and self-service BI. Built as a reference for analytics engineering interviews and dbt project ideas. Healthcare analytics example using synthetic Synthea data.
 
  **[Live Dashboard](https://medflow-damini.streamlit.app)** &nbsp;·&nbsp;  **[dbt Lineage & Docs](https://daminirastogi11.github.io/medflow/)** &nbsp;·&nbsp;  **[CI Status](https://github.com/DaminiRastogi11/medflow/actions)**
 
